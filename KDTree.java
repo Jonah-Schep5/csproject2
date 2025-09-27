@@ -24,23 +24,18 @@ public class KDTree {
 
     private Node insertRec(Node node, City city, int depth) {
         if (node == null) return new Node(city);
-        int axis = depth % 2;
 
-        if (axis == 0) { // compare x
-            if (city.getX() <= node.city.getX()) {
-                node.left = insertRec(node.left, city, depth + 1);
-            } else {
-                node.right = insertRec(node.right, city, depth + 1);
-            }
-        } else { // compare y
-            if (city.getY() <= node.city.getY()) {
-                node.left = insertRec(node.left, city, depth + 1);
-            } else {
-                node.right = insertRec(node.right, city, depth + 1);
-            }
-        }
+        int axis = depth % 2; // 0=x, 1=y
+        int cmp = (axis == 0) ? Integer.compare(city.getX(), node.city.getX())
+                              : Integer.compare(city.getY(), node.city.getY());
+
+        // OpenDSA spec: "equal values go LEFT"
+        if (cmp <= 0) node.left = insertRec(node.left, city, depth + 1);
+        else node.right = insertRec(node.right, city, depth + 1);
+
         return node;
     }
+
 
     /** Find city by coordinates. */
     public City find(int x, int y) {
@@ -168,10 +163,15 @@ public class KDTree {
 
     private void printRec(Node node, StringBuilder sb, int depth) {
         if (node == null) return;
-        sb.append(" ".repeat(depth * 2))
-          .append(depth).append(" ")
-          .append(node.city.toString()).append("\n");
+
+        // Print left subtree first (smaller coords), then right
         printRec(node.left, sb, depth + 1);
+
+        // Print current node
+        sb.append(depth);
+        if (depth > 0) sb.append(" ".repeat(depth * 2));
+        sb.append(node.city.toString()).append("\n");
+
         printRec(node.right, sb, depth + 1);
     }
 }

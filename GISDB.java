@@ -170,6 +170,6 @@ public class GISDB implements GIS {
      * @return String listing the cities as specified.
      */
     public String print() {
-        return "";
+        return cityBinarySearchTree.printTree();
     }
 }
