@@ -84,6 +84,12 @@ public class GISDB implements GIS {
      *          was deleted).
      */
     public String delete(int x, int y) {
+        if(x < 0 || x > MAXCOORD) {
+            return "";
+        }
+        if(y < 0 || y > MAXCOORD) {
+            return "";
+        }
         return "";
     }
 
@@ -100,6 +106,7 @@ public class GISDB implements GIS {
      *          (listed in preorder as they are deleted).
      */
     public String delete(String name) {
+        // //cityBinarySearchTree.deleteAll(name);
         return "";
     }
 
@@ -112,7 +119,13 @@ public class GISDB implements GIS {
      * @return The city name if there is such a city, empty otherwise
      */
     public String info(int x, int y) {
-        return "";
+        
+        if(cityKDTree.find(x, y) == null) {
+            return "";
+        }
+        else {
+            return cityKDTree.find(x, y).getName();
+        }
     }
 
 
@@ -144,7 +157,7 @@ public class GISDB implements GIS {
      *          If k-d tree is empty, the number of nodes visited is zero.
      */
     public String search(int x, int y, int radius) {
-        return "";
+        return cityKDTree.search(x, y, radius);
     }
 
 
