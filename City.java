@@ -5,26 +5,34 @@
 public class City implements Comparable<City> {
     // city name (key for BST)
     private final String name;
-    // x coordinate (longitude / e.g.)
-    private final double x;
-    // y coordinate (latitude / e.g.)
-    private final double y;
+    // x coordinate
+    private final int x;
+    // y coordinate
+    private final int y;
 
-    public City(String name, double x, double y) {
+    public City(String name, int x, int y) {
         if (name == null) throw new IllegalArgumentException("name cannot be null");
         this.name = name;
         this.x = x;
         this.y = y;
     }
 
-    public String getName() { return name; }
-    public double getX() { return x; }
-    public double getY() { return y; }
+    public String getName() { 
+        return name; 
+    }
+
+    public int getX() { 
+        return x; 
+    }
+
+    public int getY() { 
+        return y; 
+    }
 
     @Override
     public String toString() {
         // Format similar to "City(name, x, y)"
-        return String.format("%s (%.6f, %.6f)", name, x, y);
+        return String.format("%s (%d, %d)", name, x, y);
     }
 
     @Override
@@ -32,9 +40,7 @@ public class City implements Comparable<City> {
         if (this == o) return true;
         if (!(o instanceof City)) return false;
         City other = (City) o;
-        return name.equals(other.name)
-               && Double.compare(x, other.x) == 0
-               && Double.compare(y, other.y) == 0;
+        return name.equals(other.name) && x == other.x && y == other.y;
     }
 
     /**
@@ -45,8 +51,8 @@ public class City implements Comparable<City> {
     public int compareTo(City other) {
         int c = this.name.compareTo(other.name);
         if (c != 0) return c;
-        c = Double.compare(this.x, other.x);
+        c = Integer.compare(this.x, other.x);
         if (c != 0) return c;
-        return Double.compare(this.y, other.y);
+        return Integer.compare(this.y, other.y);
     }
 }

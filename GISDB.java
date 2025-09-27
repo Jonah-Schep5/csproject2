@@ -18,13 +18,17 @@ public class GISDB implements GIS {
      * Dimension of the points stored in the tree
      */
     public static final int DIMENSION = 2;
-
+    
+    private BST<City> cityBinarySearchTree = new BST<>();
+    private KDTree cityKDTree = new KDTree();
+    
     // ----------------------------------------------------------
     /**
      * Create a new MovieRaterDB object.
      */
     GISDB() {
-        // Put your code here
+        cityBinarySearchTree = new BST<City>();
+        cityKDTree = new KDTree();
     }
 
 
@@ -34,7 +38,9 @@ public class GISDB implements GIS {
      * @return True if the database has been cleared
      */
     public boolean clear() {
-        return false;
+        cityBinarySearchTree = new BST<City>();
+        cityKDTree = new KDTree();
+        return true;
     }
 
     // ----------------------------------------------------------
@@ -48,7 +54,20 @@ public class GISDB implements GIS {
      * @return True iff the city is successfully entered into the database
      */
     public boolean insert(String name, int x, int y) {
-        return false;
+        if(x < 0 && x > MAXCOORD) {
+            return false;
+        }
+        if(y < 0 && y > MAXCOORD) {
+            return false;
+        }
+        // Insert into both KDTREE and BST, make sure we search for the node in both before inserting, ifwe find a city with identical coords, not allowed.
+        if(cityKDTree.find(x,y) != null) {
+            return false;
+        }
+        City cityToAdd = new City(name, x, y);
+        cityKDTree.insert(cityToAdd);
+        cityBinarySearchTree.insert(cityToAdd);
+        return true;
     }
 
 
@@ -138,7 +157,7 @@ public class GISDB implements GIS {
      * @return String listing the cities as specified.
      */
     public String debug() {
-        return "";
+        return cityKDTree.printTree();
     }
 
 

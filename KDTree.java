@@ -1,48 +1,38 @@
 /**
- * 2D kd-tree specialized to store City objects (with double x,y coordinates).
- * Public API:
- *  - void insert(City city)
- *  - boolean delete(double x, double y)   // deletes node that matches coordinates exactly (x and y)
- *  - void printTree()                      // pretty print with indentation, shows splitting axis
- *
- * Constraints met:
- *  - nodes do NOT have parent pointers
- *  - nodes do NOT store depth/axis; axis is passed in recursion
+ * KDTree (2D) using integer coordinates only.
+ * Pure linked node structure, no ADTs.
  */
 public class KDTree {
-    private static class KDNode {
-        City city;      // stored city record (includes coordinates)
-        KDNode left;    // left subtree
-        KDNode right;   // right subtree
 
-        KDNode(City c) { city = c; left = null; right = null; }
+    private static class Node {
+        City city;
+        Node left, right;
+        Node(City c) { city = c; }
     }
 
-    private KDNode root;
+    private Node root;
 
     public KDTree() { root = null; }
 
-    /**
-     * Insert a city into the kd-tree.
-     * The root is at depth 0 and we alternate axis: 0 => x, 1 => y.
-     */
-    public void insert(City city) {
-        if (city == null) throw new IllegalArgumentException("city cannot be null");
+    /** Insert city; return false if a city with identical coordinates already exists. */
+    public boolean insert(City city) {
+        if (city == null) return false;
+        if (find(city.getX(), city.getY()) != null) return false;
         root = insertRec(root, city, 0);
+        return true;
     }
 
-    private KDNode insertRec(KDNode node, City city, int depth) {
-        if (node == null) return new KDNode(city);
+    private Node insertRec(Node node, City city, int depth) {
+        if (node == null) return new Node(city);
         int axis = depth % 2;
-        if (axis == 0) {
-            // compare x
+
+        if (axis == 0) { // compare x
             if (city.getX() <= node.city.getX()) {
                 node.left = insertRec(node.left, city, depth + 1);
             } else {
                 node.right = insertRec(node.right, city, depth + 1);
             }
-        } else {
-            // compare y
+        } else { // compare y
             if (city.getY() <= node.city.getY()) {
                 node.left = insertRec(node.left, city, depth + 1);
             } else {
@@ -52,101 +42,136 @@ public class KDTree {
         return node;
     }
 
-    /**
-     * Delete a city by exact coordinates (x and y must match exactly).
-     * Returns true if a node was deleted.
-     */
-    public boolean delete(double x, double y) {
-        boolean[] deleted = new boolean[]{false};
-        root = deleteRec(root, x, y, 0, deleted);
-        return deleted[0];
+    /** Find city by coordinates. */
+    public City find(int x, int y) {
+        return findRec(root, x, y, 0);
     }
 
-    private KDNode deleteRec(KDNode node, double x, double y, int depth, boolean[] deleted) {
+    private City findRec(Node node, int x, int y, int depth) {
         if (node == null) return null;
-        // Check if node matches coordinates exactly
-        if (Double.compare(node.city.getX(), x) == 0 && Double.compare(node.city.getY(), y) == 0) {
-            deleted[0] = true;
-            // Case: node has a right subtree -> find min in splitting dimension in right, replace
+        if (node.city.getX() == x && node.city.getY() == y) {
+            return node.city;
+        }
+        int axis = depth % 2;
+        if ((axis == 0 && x <= node.city.getX()) ||
+            (axis == 1 && y <= node.city.getY())) {
+            return findRec(node.left, x, y, depth + 1);
+        } else {
+            return findRec(node.right, x, y, depth + 1);
+        }
+    }
+
+    /** Delete by coordinates, return "<nodesVisited> <cityName>" or "<nodesVisited> " if not found. */
+    public String delete(int x, int y) {
+        int[] visited = new int[]{0};
+        StringBuilder name = new StringBuilder();
+        root = deleteRec(root, x, y, 0, visited, name);
+        if (name.length() == 0) return visited[0] + " ";
+        return visited[0] + " " + name.toString();
+    }
+
+    private Node deleteRec(Node node, int x, int y, int depth, int[] visited, StringBuilder name) {
+        if (node == null) return null;
+        visited[0]++;
+
+        if (node.city.getX() == x && node.city.getY() == y) {
+            if (name.length() == 0) name.append(node.city.getName());
             int axis = depth % 2;
+
             if (node.right != null) {
-                KDNode min = findMin(node.right, axis, depth + 1);
+                Node min = findMin(node.right, axis, depth + 1);
                 node.city = min.city;
-                node.right = deleteRec(node.right, min.city.getX(), min.city.getY(), depth + 1, new boolean[]{false});
+                node.right = deleteRec(node.right, min.city.getX(), min.city.getY(), depth + 1, visited, new StringBuilder());
                 return node;
-            } else if (node.left != null) {
-                // No right subtree but left exists: find min in left, replace, then move left subtree
-                KDNode min = findMin(node.left, axis, depth + 1);
+            }
+            else if (node.left != null) {
+                Node min = findMin(node.left, axis, depth + 1);
                 node.city = min.city;
-                // After replacing with min from left, we must delete that node from left subtree
-                node.left = deleteRec(node.left, min.city.getX(), min.city.getY(), depth + 1, new boolean[]{false});
-                // Note: Originally some kd algorithms move left subtree to right; our approach leaves subtree structure intact
+                node.right = deleteRec(node.left, min.city.getX(), min.city.getY(), depth + 1, visited, new StringBuilder());
+                node.left = null;
                 return node;
-            } else {
-                // leaf node: simply remove it
+            }
+            else {
                 return null;
             }
         }
 
         int axis = depth % 2;
-        if (axis == 0) {
-            if (x <= node.city.getX()) {
-                node.left = deleteRec(node.left, x, y, depth + 1, deleted);
-            } else {
-                node.right = deleteRec(node.right, x, y, depth + 1, deleted);
-            }
+        if ((axis == 0 && x <= node.city.getX()) ||
+            (axis == 1 && y <= node.city.getY())) {
+            node.left = deleteRec(node.left, x, y, depth + 1, visited, name);
         } else {
-            if (y <= node.city.getY()) {
-                node.left = deleteRec(node.left, x, y, depth + 1, deleted);
-            } else {
-                node.right = deleteRec(node.right, x, y, depth + 1, deleted);
-            }
+            node.right = deleteRec(node.right, x, y, depth + 1, visited, name);
         }
         return node;
     }
 
-    /**
-     * Find the node with minimum value in the specified dimension (0 => x, 1 => y) within subtree rooted at node.
-     * 'depth' is the depth of the 'node' in the overall tree to decide which axis to compare while descending.
-     */
-    private KDNode findMin(KDNode node, int dim, int depth) {
+    private Node findMin(Node node, int axis, int depth) {
         if (node == null) return null;
-        int axis = depth % 2;
-        if (axis == dim) {
-            // when current splitting axis equals desired dimension, min must be in left subtree or node itself
+        int nodeAxis = depth % 2;
+        if (nodeAxis == axis) {
             if (node.left == null) return node;
-            return findMin(node.left, dim, depth + 1);
+            return findMin(node.left, axis, depth + 1);
         } else {
-            // when axis differs, min could be in left, right, or current node
-            KDNode leftMin = findMin(node.left, dim, depth + 1);
-            KDNode rightMin = findMin(node.right, dim, depth + 1);
-            KDNode minNode = node;
-            if (leftMin != null && compareDim(leftMin.city, minNode.city, dim) < 0) minNode = leftMin;
-            if (rightMin != null && compareDim(rightMin.city, minNode.city, dim) < 0) minNode = rightMin;
-            return minNode;
+            Node leftMin = findMin(node.left, axis, depth + 1);
+            Node rightMin = findMin(node.right, axis, depth + 1);
+            Node min = node;
+            if (leftMin != null && compareByAxis(leftMin.city, min.city, axis) < 0) min = leftMin;
+            if (rightMin != null && compareByAxis(rightMin.city, min.city, axis) < 0) min = rightMin;
+            return min;
         }
     }
 
-    // compare cities in given dimension: dim 0 => x, dim 1 => y
-    private int compareDim(City a, City b, int dim) {
-        if (dim == 0) return Double.compare(a.getX(), b.getX());
-        return Double.compare(a.getY(), b.getY());
+    private int compareByAxis(City a, City b, int axis) {
+        return (axis == 0) ? Integer.compare(a.getX(), b.getX())
+                           : Integer.compare(a.getY(), b.getY());
     }
 
-    /**
-     * Print the kd-tree in a readable, indented form.
-     * Example output line: "[depth 2 axis=0] CityName (x, y)"
-     */
-    public void printTree() {
-        printRec(root, 0);
+    /** Range search within radius. */
+    public String search(int x, int y, int radius) {
+        if (radius < 0) return "";
+        StringBuilder sb = new StringBuilder();
+        int[] visited = new int[]{0};
+        searchRec(root, x, y, radius, 0, sb, visited);
+        sb.append(visited[0]);
+        return sb.toString();
     }
 
-    private void printRec(KDNode node, int depth) {
+    private void searchRec(Node node, int qx, int qy, int radius, int depth,
+                           StringBuilder sb, int[] visited) {
         if (node == null) return;
-        String indent = " ".repeat(Math.min(depth * 2, 200)); // small indentation safety cap
+        visited[0]++;
+
+        int dx = node.city.getX() - qx;
+        int dy = node.city.getY() - qy;
+        if (dx * dx + dy * dy <= radius * radius) {
+            sb.append(node.city.toString()).append("\n");
+        }
+
         int axis = depth % 2;
-        System.out.println(indent + "[d=" + depth + " axis=" + (axis==0? "x":"y") + "] " + node.city.toString());
-        printRec(node.left, depth + 1);
-        printRec(node.right, depth + 1);
+        int diff = (axis == 0) ? dx : dy;
+
+        if (diff >= -radius) {
+            searchRec(node.left, qx, qy, radius, depth + 1, sb, visited);
+        }
+        if (diff <= radius) {
+            searchRec(node.right, qx, qy, radius, depth + 1, sb, visited);
+        }
+    }
+
+    /** Preorder print with indentation. */
+    public String printTree() {
+        StringBuilder sb = new StringBuilder();
+        printRec(root, sb, 0);
+        return sb.toString();
+    }
+
+    private void printRec(Node node, StringBuilder sb, int depth) {
+        if (node == null) return;
+        sb.append(" ".repeat(depth * 2))
+          .append(depth).append(" ")
+          .append(node.city.toString()).append("\n");
+        printRec(node.left, sb, depth + 1);
+        printRec(node.right, sb, depth + 1);
     }
 }
