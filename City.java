@@ -37,16 +37,6 @@ public class City implements Comparable<City> {
                && Double.compare(y, other.y) == 0;
     }
 
-    @Override
-    public int hashCode() {
-        int h = name.hashCode();
-        long lx = Double.doubleToLongBits(x);
-        long ly = Double.doubleToLongBits(y);
-        h = 31*h + (int)(lx ^ (lx >>> 32));
-        h = 31*h + (int)(ly ^ (ly >>> 32));
-        return h;
-    }
-
     /**
      * Compare primarily by name. If names equal, compare x then y so BST ordering is deterministic.
      * This comparator will be used by the BST.
