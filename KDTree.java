@@ -79,7 +79,7 @@ public class KDTree {
         root = deleteRec(root, x, y, 0, visited, name);
         if (name.length() == 0)
             return visited[0] + " ";
-        return visited[0] + " " + name.toString();
+        return visited[0] + "\n" + name.toString();
     }
 
     private Node deleteRec(Node node, int x, int y, int depth, int[] visited, StringBuilder name) {

@@ -97,26 +97,20 @@ class BST<T extends Comparable<T>> {
         return curr;
     }
 
-    // Find by value (return string of matches)
     public String findAll(T value) {
         StringBuilder sb = new StringBuilder();
-        findRec(root, value, sb);
+        findAllRec(root, value, sb);
         return sb.toString().trim();
     }
 
-    private void findRec(Node curr, T value, StringBuilder sb) {
-        if (curr == null)
-            return;
-        int cmp = value.compareTo(curr.data);
-        if (cmp == 0) {
+    private void findAllRec(Node curr, T value, StringBuilder sb) {
+        if (curr == null) return;
+
+        if (curr.data.compareTo(value) == 0) {
             sb.append(curr.data.toString()).append("\n");
-            findRec(curr.left, value, sb);
-            findRec(curr.right, value, sb);
-        } else if (cmp < 0) {
-            findRec(curr.left, value, sb);
-        } else {
-            findRec(curr.right, value, sb);
         }
+        findAllRec(curr.left, value, sb);
+        findAllRec(curr.right, value, sb);
     }
 
     // Print in-order with indentation by level

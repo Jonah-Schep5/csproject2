@@ -90,7 +90,22 @@ public class GISDB implements GIS {
         if(y < 0 || y > MAXCOORD) {
             return "";
         }
-        return "";
+        // Delete from KDTree
+        String kdOutput = cityKDTree.delete(x, y);
+        if (kdOutput.trim().isEmpty()) {
+            return kdOutput; // nothing deleted
+        }
+
+        // Extract the city name from KDTree output
+        String[] parts = kdOutput.trim().split(" ", 2);
+        if (parts.length < 2) return ""; // safety
+        String cityName = parts[1];
+
+        // Delete the same city from BST
+        City cityToRemove = new City(cityName, x, y);
+        cityBinarySearchTree.deleteAll(cityToRemove); // generic BST deletion
+
+        return kdOutput;
     }
 
 
@@ -106,8 +121,29 @@ public class GISDB implements GIS {
      *          (listed in preorder as they are deleted).
      */
     public String delete(String name) {
-        // //cityBinarySearchTree.deleteAll(name);
-        return "";
+        // Step 1: Get all matching cities from BST
+        String allMatches = cityBinarySearchTree.findAll(new City(name, 0, 0));
+        if (allMatches.isEmpty()) {
+            return "";
+        }
+
+        // Step 2: Delete each matching city from KDTree
+        String[] lines = allMatches.split("\n");
+        for (String line : lines) {
+            // line format: "Name (x, y)"
+            int start = line.indexOf('(');
+            int comma = line.indexOf(',', start);
+            int end = line.indexOf(')', comma);
+            int x = Integer.parseInt(line.substring(start + 1, comma).trim());
+            int y = Integer.parseInt(line.substring(comma + 1, end).trim());
+
+            cityKDTree.delete(x, y);
+        }
+
+        // Step 3: Delete all from BST
+        cityBinarySearchTree.deleteAll(new City(name, 0, 0));
+
+        return allMatches;
     }
 
 
@@ -137,7 +173,11 @@ public class GISDB implements GIS {
      *          empty if there are none.
      */
     public String info(String name) {
-        return "";
+        if (name == null || name.isEmpty()) return "";
+
+        // Temporary City object with given name, coordinates don't matter for comparison
+        City dummy = new City(name, 0, 0);
+        return cityBinarySearchTree.findAll(dummy);
     }
 
 
