@@ -24,9 +24,7 @@ public class KDTree {
      * exists.
      */
     public boolean insert(City city) {
-        if (city == null)
-            return false;
-        if (find(city.getX(), city.getY()) != null)
+        if (city == null || find(city.getX(), city.getY()) != null)
             return false;
         root = insertRec(root, city, 0);
         return true;
@@ -36,16 +34,15 @@ public class KDTree {
         if (node == null)
             return new Node(city);
 
-        int axis = depth % 2; // 0=x, 1=y
-        int cmp = (axis == 0) ? Integer.compare(city.getX(), node.city.getX())
-                : Integer.compare(city.getY(), node.city.getY());
+        int axis = depth & 1; // Replace % with bitwise AND (equivalent to %2)
+        int cmp = compareByAxis(city, node.city, axis);
 
-        // OpenDSA spec: "equal values go LEFT"
-        if (cmp <= 0)
+        // Single conditional - equal values go LEFT
+        if (cmp <= 0) {
             node.left = insertRec(node.left, city, depth + 1);
-        else
+        } else {
             node.right = insertRec(node.right, city, depth + 1);
-
+        }
         return node;
     }
 
@@ -57,22 +54,18 @@ public class KDTree {
     private City findRec(Node node, int x, int y, int depth) {
         if (node == null)
             return null;
-        if (node.city.getX() == x && node.city.getY() == y) {
+        if (node.city.getX() == x && node.city.getY() == y)
             return node.city;
-        }
-        int axis = depth % 2;
-        if ((axis == 0 && x <= node.city.getX()) ||
-                (axis == 1 && y <= node.city.getY())) {
-            return findRec(node.left, x, y, depth + 1);
-        } else {
-            return findRec(node.right, x, y, depth + 1);
-        }
+
+        int axis = depth & 1;
+        int searchValue = (axis == 0) ? x : y;
+        int nodeValue = (axis == 0) ? node.city.getX() : node.city.getY();
+
+        // Single conditional for direction
+        Node nextNode = (searchValue <= nodeValue) ? node.left : node.right;
+        return findRec(nextNode, x, y, depth + 1);
     }
 
-    /**
-     * Delete by coordinates, return "<nodesVisited> <cityName>" or "<nodesVisited>
-     * " if not found.
-     */
     public String delete(int x, int y) {
         int[] visited = new int[] { 0 };
         StringBuilder name = new StringBuilder();
@@ -82,7 +75,13 @@ public class KDTree {
         return visited[0] + "\n" + name.toString();
     }
 
-    private Node deleteRec(Node node, int x, int y, int depth, int[] visited, StringBuilder name) {
+    private Node deleteRec(
+            Node node,
+            int x,
+            int y,
+            int depth,
+            int[] visited,
+            StringBuilder name) {
         if (node == null)
             return null;
         visited[0]++;
@@ -90,29 +89,15 @@ public class KDTree {
         if (node.city.getX() == x && node.city.getY() == y) {
             if (name.length() == 0)
                 name.append(node.city.getName());
-            int axis = depth % 2;
-
-            if (node.right != null) {
-                Node min = findMin(node.right, axis, depth + 1);
-                node.city = min.city;
-                node.right = deleteRec(node.right, min.city.getX(), min.city.getY(), depth + 1, visited,
-                        new StringBuilder());
-                return node;
-            } else if (node.left != null) {
-                Node min = findMin(node.left, axis, depth + 1);
-                node.city = min.city;
-                node.right = deleteRec(node.left, min.city.getX(), min.city.getY(), depth + 1, visited,
-                        new StringBuilder());
-                node.left = null;
-                return node;
-            } else {
-                return null;
-            }
+            return deleteNode(node, depth, visited);
         }
 
-        int axis = depth % 2;
-        if ((axis == 0 && x <= node.city.getX()) ||
-                (axis == 1 && y <= node.city.getY())) {
+        // Single conditional for search direction
+        int axis = depth & 1;
+        int searchValue = (axis == 0) ? x : y;
+        int nodeValue = (axis == 0) ? node.city.getX() : node.city.getY();
+
+        if (searchValue <= nodeValue) {
             node.left = deleteRec(node.left, x, y, depth + 1, visited, name);
         } else {
             node.right = deleteRec(node.right, x, y, depth + 1, visited, name);
@@ -120,28 +105,68 @@ public class KDTree {
         return node;
     }
 
+    private Node deleteNode(Node node, int depth, int[] visited) {
+        // Handle deletion cases with minimal conditionals
+        if (node.right != null) {
+            return replaceWithSuccessor(node, node.right, depth, visited);
+        }
+        if (node.left != null) {
+            return replaceWithSuccessor(node, node.left, depth, visited);
+        }
+        return null; // Leaf node
+    }
+
+    private Node replaceWithSuccessor(
+            Node node,
+            Node subtree,
+            int depth,
+            int[] visited) {
+        int axis = depth & 1;
+        Node successor = findMin(subtree, axis, depth + 1);
+        node.city = successor.city;
+
+        // If we used left subtree, move it to right and clear left
+        boolean usedLeft = (subtree == node.left);
+        if (usedLeft) {
+            node.right = deleteRec(node.left, successor.city.getX(),
+                    successor.city.getY(), depth + 1, visited, new StringBuilder());
+            node.left = null;
+        } else {
+            node.right = deleteRec(node.right, successor.city.getX(),
+                    successor.city.getY(), depth + 1, visited, new StringBuilder());
+        }
+        return node;
+    }
+
     private Node findMin(Node node, int axis, int depth) {
         if (node == null)
             return null;
-        int nodeAxis = depth % 2;
-        if (nodeAxis == axis) {
-            if (node.left == null)
-                return node;
-            return findMin(node.left, axis, depth + 1);
-        } else {
+
+        int currentAxis = depth & 1;
+        if (currentAxis == axis) {
+            // Minimum must be in left subtree or current node
             Node leftMin = findMin(node.left, axis, depth + 1);
-            Node rightMin = findMin(node.right, axis, depth + 1);
-            Node min = node;
-            if (leftMin != null && compareByAxis(leftMin.city, min.city, axis) < 0)
-                min = leftMin;
-            if (rightMin != null && compareByAxis(rightMin.city, min.city, axis) < 0)
-                min = rightMin;
-            return min;
+            return (leftMin != null) ? leftMin : node;
         }
+
+        // Check all three: current, left, right
+        Node leftMin = findMin(node.left, axis, depth + 1);
+        Node rightMin = findMin(node.right, axis, depth + 1);
+        return getMinOfThree(node, leftMin, rightMin, axis);
+    }
+
+    private Node getMinOfThree(Node a, Node b, Node c, int axis) {
+        Node min = a;
+        if (b != null && compareByAxis(b.city, min.city, axis) < 0)
+            min = b;
+        if (c != null && compareByAxis(c.city, min.city, axis) < 0)
+            min = c;
+        return min;
     }
 
     private int compareByAxis(City a, City b, int axis) {
-        return (axis == 0) ? Integer.compare(a.getX(), b.getX())
+        return (axis == 0)
+                ? Integer.compare(a.getX(), b.getX())
                 : Integer.compare(a.getY(), b.getY());
     }
 
@@ -150,14 +175,20 @@ public class KDTree {
         if (radius < 0)
             return "";
         StringBuilder sb = new StringBuilder();
-        int[] visited = new int[] { 0 };
+        int[] visited = { 0 };
         searchRec(root, x, y, radius, 0, sb, visited);
         sb.append(visited[0]);
         return sb.toString();
     }
 
-    private void searchRec(Node node, int qx, int qy, int radius, int depth,
-            StringBuilder sb, int[] visited) {
+    private void searchRec(
+            Node node,
+            int qx,
+            int qy,
+            int radius,
+            int depth,
+            StringBuilder sb,
+            int[] visited) {
         if (node == null)
             return;
         visited[0]++;
@@ -168,15 +199,15 @@ public class KDTree {
             sb.append(node.city.toString()).append("\n");
         }
 
-        int axis = depth % 2;
+        int axis = depth & 1;
         int diff = (axis == 0) ? dx : dy;
 
-        if (diff >= -radius) {
+        // Simplified traversal logic - visit both sides if they could contain
+        // results
+        if (diff > -radius)
             searchRec(node.left, qx, qy, radius, depth + 1, sb, visited);
-        }
-        if (diff <= radius) {
+        if (diff < radius)
             searchRec(node.right, qx, qy, radius, depth + 1, sb, visited);
-        }
     }
 
     /** Preorder print with indentation. */
@@ -190,13 +221,11 @@ public class KDTree {
         if (node == null)
             return;
 
-        // Print left subtree first (smaller coords), then right
         printRec(node.left, sb, depth + 1);
 
-        // Print current node
         sb.append(depth);
         if (depth > 0)
-            sb.append(" ".repeat(depth * 2));
+            sb.append("  ".repeat(depth)); // Simplified spacing
         sb.append(node.city.toString()).append("\n");
 
         printRec(node.right, sb, depth + 1);
