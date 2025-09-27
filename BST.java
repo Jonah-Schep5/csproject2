@@ -130,9 +130,13 @@ class BST<T extends Comparable<T>> {
         if (curr == null)
             return;
         printRec(curr.left, sb);
-        sb.append(" ".repeat(curr.level * 2))
-                .append(curr.level).append(" ")
-                .append(curr.data.toString()).append("\n");
+
+        sb.append(curr.level);
+        if (curr.level > 0) {
+            sb.append(" ".repeat(curr.level * 2));
+        }
+        sb.append(curr.data).append("\n");
+
         printRec(curr.right, sb);
     }
 }
