@@ -33,8 +33,7 @@ class BST<T extends Comparable<T>> {
                 return true;
             }
             return insertRec(curr.left, value, level + 1);
-        }
-        else {
+        } else {
             if (curr.right == null) {
                 curr.right = new Node(value, level + 1);
                 return true;
@@ -51,31 +50,50 @@ class BST<T extends Comparable<T>> {
     }
 
     private Node deleteRec(Node curr, T value, boolean[] deleted) {
-        if (curr == null) return null;
+        if (curr == null)
+            return null;
 
+        // First remove matches from children (post-order)
+        curr.left = deleteRec(curr.left, value, deleted);
+        curr.right = deleteRec(curr.right, value, deleted);
+
+        // Now handle current node
         int cmp = value.compareTo(curr.data);
-        if (cmp < 0) {
-            curr.left = deleteRec(curr.left, value, deleted);
-        }
-        else if (cmp > 0) {
-            curr.right = deleteRec(curr.right, value, deleted);
-        }
-        else {
-            // match found
+        if (cmp == 0) {
             deleted[0] = true;
-            if (curr.left == null) return curr.right;
-            if (curr.right == null) return curr.left;
 
-            // two children → replace with max from LEFT subtree
+            // No child -> remove node
+            if (curr.left == null && curr.right == null) {
+                return null;
+            }
+            // One child -> replace node with child
+            if (curr.left == null) {
+                return curr.right;
+            }
+            if (curr.right == null) {
+                return curr.left;
+            }
+
+            // Two children -> replace with max from left subtree (per spec)
             Node maxLeft = findMax(curr.left);
             curr.data = maxLeft.data;
+            // Remove the node we copied from left subtree
             curr.left = deleteRec(curr.left, maxLeft.data, deleted);
+            // Note: maxLeft.data should not be equal to `value` here because we already
+            // deleted
+            // all occurrences of `value` in the left subtree earlier. If in some
+            // pathological
+            // case maxLeft.data == value, the post-order recursion ensures it will be
+            // removed
+            // by the call above.
         }
+
         return curr;
     }
 
     private Node findMax(Node curr) {
-        while (curr.right != null) curr = curr.right;
+        while (curr.right != null)
+            curr = curr.right;
         return curr;
     }
 
@@ -87,17 +105,16 @@ class BST<T extends Comparable<T>> {
     }
 
     private void findRec(Node curr, T value, StringBuilder sb) {
-        if (curr == null) return;
+        if (curr == null)
+            return;
         int cmp = value.compareTo(curr.data);
         if (cmp == 0) {
             sb.append(curr.data.toString()).append("\n");
             findRec(curr.left, value, sb);
             findRec(curr.right, value, sb);
-        }
-        else if (cmp < 0) {
+        } else if (cmp < 0) {
             findRec(curr.left, value, sb);
-        }
-        else {
+        } else {
             findRec(curr.right, value, sb);
         }
     }
@@ -110,15 +127,12 @@ class BST<T extends Comparable<T>> {
     }
 
     private void printRec(Node curr, StringBuilder sb) {
-        if (curr == null) return;
+        if (curr == null)
+            return;
         printRec(curr.left, sb);
-
-        sb.append(curr.level);
-        if (curr.level > 0) {
-            sb.append(" ".repeat(curr.level * 2));
-        }
-        sb.append(curr.data).append("\n");
-
+        sb.append(" ".repeat(curr.level * 2))
+                .append(curr.level).append(" ")
+                .append(curr.data.toString()).append("\n");
         printRec(curr.right, sb);
     }
 }

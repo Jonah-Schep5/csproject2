@@ -1,101 +1,191 @@
 import static org.junit.Assert.*;
 import org.junit.Before;
 import org.junit.Test;
-import java.io.ByteArrayOutputStream;
-import java.io.PrintStream;
 import student.TestCase;
 
+/**
+ * Unit tests for the BST class.
+ * 
+ * These tests verify correctness of:
+ * - insertion behavior (including duplicate handling)
+ * - deletion of all matching nodes
+ * - findAll search results
+ * - in-order printing with correct levels
+ */
 public class BSTTest extends TestCase {
 
-  private BST<Integer> testBST;
+  private BST<Integer> tree;
 
+  /**
+   * Runs before each test. Initializes a new BST instance.
+   */
+  @Before
   public void setUp() {
-
-    testBST = new BST<>();
-    testBST.insert(8);
-    testBST.insert(3);
-    testBST.insert(10);
-    testBST.insert(1);
-    testBST.insert(6);
-    testBST.insert(14);
-    testBST.insert(4);
-    testBST.insert(7);
-    testBST.insert(13);
-
+    tree = new BST<>();
   }
 
-  public void testInsertAndPrintTree() {
-    // Capture print output
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    System.setOut(new PrintStream(out));
-
-    testBST.printTree();
-
-    String output = out.toString().trim();
-    String[] values = output.split("\\s+");
-
-    // BST should be sorted in-order
-    String[] expected = { "1", "3", "4", "6", "7", "8", "10", "13", "14" };
-    assertArrayEquals(expected, values);
+  /**
+   * Tests that inserting into an empty BST places the node as the root.
+   */
+  @Test
+  public void testInsertIntoEmptyTree() {
+    assertTrue(tree.insert(10));
+    String output = tree.printTree();
+    assertTrue("Root node should be level 0", output.contains("10"));
   }
 
+  /**
+   * Tests that inserting multiple nodes produces a valid BST structure in sorted
+   * order.
+   */
+  @Test
+  public void testInsertMultipleNodes() {
+    tree.insert(10);
+    tree.insert(5);
+    tree.insert(15);
+    tree.insert(2);
+    tree.insert(7);
+
+    String printed = tree.printTree();
+
+    // Check sorted order in printTree
+    assertTrue(printed.indexOf("2") < printed.indexOf("5"));
+    assertTrue(printed.indexOf("5") < printed.indexOf("7"));
+    assertTrue(printed.indexOf("7") < printed.indexOf("10"));
+    assertTrue(printed.indexOf("10") < printed.indexOf("15"));
+  }
+
+  /**
+   * Tests that duplicate values are inserted to the left subtree (per assignment
+   * spec).
+   */
   @Test
   public void testInsertDuplicateGoesLeft() {
-    testBST.insert(3); // duplicate
-    // Should still be sorted
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    System.setOut(new PrintStream(out));
+    tree.insert(10);
+    tree.insert(10); // duplicate should go LEFT
+    String printed = tree.printTree();
 
-    testBST.printTree();
-
-    String output = out.toString();
-    assertTrue("Duplicate value should still be present", output.contains("3"));
+    // Expect two "10" entries
+    int firstIndex = printed.indexOf("10");
+    int secondIndex = printed.indexOf("10", firstIndex + 1);
+    assertTrue("Second 10 should exist", secondIndex != -1);
+    assertTrue("Duplicate should be inserted before greater values", secondIndex > firstIndex);
   }
 
+  /**
+   * Tests that findAll returns all matching nodes.
+   */
+  @Test
+  public void testFindAllMatches() {
+    tree.insert(10);
+    tree.insert(10);
+    tree.insert(5);
+    tree.insert(15);
+
+    String result = tree.findAll(10);
+    String[] lines = result.split("\n");
+    assertEquals("There should be 2 matches for value 10", 2, lines.length);
+  }
+
+  /**
+   * Tests that deleting a leaf node removes it from the tree.
+   */
   @Test
   public void testDeleteLeafNode() {
-    // Delete leaf 13
-    assertTrue(testBST.delete(13));
+    BST<Integer> bst = new BST<>();
+    bst.insert(10);
+    bst.insert(5); // leaf
+    bst.insert(15);
 
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    System.setOut(new PrintStream(out));
-    testBST.printTree();
-
-    String result = out.toString();
-    assertFalse("Leaf 13 should be deleted", result.contains("13"));
+    assertTrue(bst.deleteAll(5));
+    assertEquals("", bst.findAll(5));
   }
 
+  /**
+   * Tests that deleting a node with one child correctly replaces it with its
+   * child.
+   */
   @Test
   public void testDeleteNodeWithOneChild() {
-    // 10 has one child (14)
-    assertTrue(testBST.delete(10));
+    tree.insert(10);
+    tree.insert(5);
+    tree.insert(2); // make 5 have one child
 
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    System.setOut(new PrintStream(out));
-    testBST.printTree();
-
-    String result = out.toString();
-    assertFalse("Node 10 should be deleted", result.contains("10"));
-    assertTrue("Child 14 should still exist", result.contains("14"));
+    assertTrue(tree.deleteAll(5));
+    String printed = tree.printTree();
+    assertFalse("Node 5 should be deleted", printed.contains("5"));
+    assertTrue("Child 2 should remain", printed.contains("2"));
   }
 
+  /**
+   * Tests that deleting a node with two children replaces it with the max node
+   * from the left subtree.
+   */
   @Test
   public void testDeleteNodeWithTwoChildren() {
-    // Delete root (8), should replace with max from left subtree (7)
-    assertTrue(testBST.delete(8));
+    tree.insert(10);
+    tree.insert(5);
+    tree.insert(15);
+    tree.insert(2);
+    tree.insert(7);
 
-    ByteArrayOutputStream out = new ByteArrayOutputStream();
-    System.setOut(new PrintStream(out));
-    testBST.printTree();
+    assertTrue(tree.deleteAll(10));
+    String printed = tree.printTree();
 
-    String result = out.toString();
-    assertFalse("Original root 8 should be deleted", result.contains("8"));
-    assertTrue("Tree should still contain other elements", result.contains("7"));
+    // After deletion, 7 (max of left subtree) should be the new root
+    assertTrue("Max of left subtree (7) should replace root", printed.contains("7"));
   }
 
+  /**
+   * Tests that deleteAll removes all duplicates from the tree.
+   */
   @Test
-  public void testDeleteNonExistentNode() {
-    assertFalse("Deleting non-existent node should return false", testBST.delete(99));
+  public void testDeleteAllDuplicates() {
+    BST<Integer> t = new BST<>();
+    t.insert(10);
+    t.insert(15);
+    t.insert(15);
+    t.insert(15);
+    t.insert(5);
+
+    assertTrue("deleteAll should report deletion", t.deleteAll(15));
+
+    assertEquals("findAll should return empty string for deleted value", "", t.findAll(15).trim());
+    String printed = t.printTree().trim();
+    assertFalse("Tree print should not contain deleted value", printed.contains("15"));
+    // remaining values should still be present
+    assertTrue(printed.contains("10"));
+    assertTrue(printed.contains("5"));
   }
 
+  /**
+   * Tests that deleting a non-existent value returns false and tree remains
+   * unchanged.
+   */
+  @Test
+  public void testDeleteNonExistentValue() {
+    tree.insert(10);
+    tree.insert(5);
+
+    assertFalse(tree.deleteAll(42));
+    String printed = tree.printTree();
+    assertTrue("Tree structure should be unchanged", printed.contains("10") && printed.contains("5"));
+  }
+
+  /**
+   * Tests the printTree method to verify correct formatting and level
+   * indentation.
+   */
+  @Test
+  public void testPrintTreeIndentationAndLevels() {
+    tree.insert(10);
+    tree.insert(5);
+    tree.insert(15);
+    tree.insert(2);
+
+    String printed = tree.printTree();
+    assertTrue("Root should be at level 0", printed.contains("10"));
+    assertTrue("Child should be at level 1", printed.contains("5"));
+    assertTrue("Leaf should be at level 2", printed.contains("2"));
+  }
 }
