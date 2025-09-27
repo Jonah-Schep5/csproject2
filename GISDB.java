@@ -54,10 +54,10 @@ public class GISDB implements GIS {
      * @return True iff the city is successfully entered into the database
      */
     public boolean insert(String name, int x, int y) {
-        if(x < 0 && x > MAXCOORD) {
+        if(x < 0 || x > MAXCOORD) {
             return false;
         }
-        if(y < 0 && y > MAXCOORD) {
+        if(y < 0 || y > MAXCOORD) {
             return false;
         }
         // Insert into both KDTREE and BST, make sure we search for the node in both before inserting, ifwe find a city with identical coords, not allowed.
