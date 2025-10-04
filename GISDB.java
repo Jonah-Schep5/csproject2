@@ -1,7 +1,9 @@
 //-------------------------------------------------------------------------
 /**
  * Implementation of the GIS interface. This is what calls the BST and the
- * Bintree to do the work.
+<<<<<<< HEAD
+<<<<<<< HEAD
+ * kd tree to do the work.
  *
  * @author {Your Name Here}
  * @version {Put Something Here}
@@ -21,7 +23,7 @@ public class GISDB implements GIS {
     
     private BST<City> cityBinarySearchTree = new BST<>();
     private KDTree cityKDTree = new KDTree();
-    
+
     // ----------------------------------------------------------
     /**
      * Create a new MovieRaterDB object.
@@ -76,7 +78,7 @@ public class GISDB implements GIS {
      * The city with these coordinates is deleted from the database
      * (if it exists).
      * Print the name of the city if it exists.
-     * If no such city at this location exist, print that.
+     * If no city at this location exists, print the empty string.
      * @param x City x-coordinate.
      * @param y City y-coordinate.
      * @return A string with the number of nodes visited during the deletion
@@ -115,10 +117,11 @@ public class GISDB implements GIS {
      * If two or more cities have this name, then ALL such cities must be
      * removed.
      * Print the coordinates of each city that is deleted.
-     * If no such city at this location exists, print that.
+     * If no city with this name exists, print the empty string.
      * @param name City name.
      * @return A string with the coordinates of each city that is deleted
      *          (listed in preorder as they are deleted).
+     *          Print the empty string if no cites match.
      */
     public String delete(String name) {
         // Step 1: Get all matching cities from BST
@@ -155,7 +158,6 @@ public class GISDB implements GIS {
      * @return The city name if there is such a city, empty otherwise
      */
     public String info(int x, int y) {
-        
         if(cityKDTree.find(x, y) == null) {
             return "";
         }
@@ -203,7 +205,7 @@ public class GISDB implements GIS {
 
     // ----------------------------------------------------------
     /**
-     * Print a listing of the database as a preorder traversal of the k-d tree.
+     * Print a listing of the database as an inorder traversal of the k-d tree.
      * Each city should be printed on a separate line. Each line should start
      * with the level of the current node, then be indented by 2 * level spaces
      * for a node at a given level, counting the root as level 0.
@@ -216,7 +218,9 @@ public class GISDB implements GIS {
 
     // ----------------------------------------------------------
     /**
-     * Print a listing of the BST in alphabetical order on the names.
+    /**
+     * Print a listing of the BST in alphabetical order (inorder traversal)
+     * on the names.
      * Each city should be printed on a separate line. Each line should start
      * with the level of the current node, then be indented by 2 * level spaces
      * for a node at a given level, counting the root as level 0.
