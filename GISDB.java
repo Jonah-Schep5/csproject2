@@ -99,7 +99,7 @@ public class GISDB implements GIS {
         }
 
         // Extract the city name from KDTree output
-        String[] parts = kdOutput.trim().split(" ", 2);
+        String[] parts = kdOutput.trim().split("\n", 2);
         if (parts.length < 2) return ""; // safety
         String cityName = parts[1];
 
