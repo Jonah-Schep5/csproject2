@@ -11,6 +11,9 @@ import student.TestCase;
  * - deletion of all matching nodes
  * - findAll search results
  * - in-order printing with correct levels
+ * 
+ * @author {Your Name}
+ * @version {Put Version Here}
  */
 public class BSTTest extends TestCase {
 
@@ -35,7 +38,8 @@ public class BSTTest extends TestCase {
   }
 
   /**
-   * Tests that inserting multiple nodes produces a valid BST structure in sorted
+   * Tests that inserting multiple nodes produces a valid BST structure in
+   * sorted
    * order.
    */
   @Test
@@ -56,7 +60,8 @@ public class BSTTest extends TestCase {
   }
 
   /**
-   * Tests that duplicate values are inserted to the left subtree (per assignment
+   * Tests that duplicate values are inserted to the left subtree (per
+   * assignment
    * spec).
    */
   @Test
@@ -69,7 +74,8 @@ public class BSTTest extends TestCase {
     int firstIndex = printed.indexOf("10");
     int secondIndex = printed.indexOf("10", firstIndex + 1);
     assertTrue("Second 10 should exist", secondIndex != -1);
-    assertTrue("Duplicate should be inserted before greater values", secondIndex > firstIndex);
+    assertTrue("Duplicate should be inserted before greater values",
+        secondIndex > firstIndex);
   }
 
   /**
@@ -118,7 +124,8 @@ public class BSTTest extends TestCase {
   }
 
   /**
-   * Tests that deleting a node with two children replaces it with the max node
+   * Tests that deleting a node with two children replaces it with the max
+   * node
    * from the left subtree.
    */
   @Test
@@ -133,7 +140,8 @@ public class BSTTest extends TestCase {
     String printed = tree.printTree();
 
     // After deletion, 7 (max of left subtree) should be the new root
-    assertTrue("Max of left subtree (7) should replace root", printed.contains("7"));
+    assertTrue("Max of left subtree (7) should replace root", printed
+        .contains("7"));
   }
 
   /**
@@ -150,9 +158,11 @@ public class BSTTest extends TestCase {
 
     assertTrue("deleteAll should report deletion", t.deleteAll(15));
 
-    assertEquals("findAll should return empty string for deleted value", "", t.findAll(15).trim());
+    assertEquals("findAll should return empty string for deleted value", "",
+        t.findAll(15).trim());
     String printed = t.printTree().trim();
-    assertFalse("Tree print should not contain deleted value", printed.contains("15"));
+    assertFalse("Tree print should not contain deleted value", printed
+        .contains("15"));
     // remaining values should still be present
     assertTrue(printed.contains("10"));
     assertTrue(printed.contains("5"));
@@ -169,7 +179,8 @@ public class BSTTest extends TestCase {
 
     assertFalse(tree.deleteAll(42));
     String printed = tree.printTree();
-    assertTrue("Tree structure should be unchanged", printed.contains("10") && printed.contains("5"));
+    assertTrue("Tree structure should be unchanged", printed.contains("10")
+        && printed.contains("5"));
   }
 
   /**
