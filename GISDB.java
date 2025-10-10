@@ -33,6 +33,7 @@ public class GISDB implements GIS {
         cityKDTree = new KDTree();
     }
 
+
     // ----------------------------------------------------------
     /**
      * Reinitialize the database
@@ -45,6 +46,7 @@ public class GISDB implements GIS {
         return true;
     }
 
+
     // ----------------------------------------------------------
     /**
      * A city at coordinate (x, y) with name name is entered into the database.
@@ -52,11 +54,11 @@ public class GISDB implements GIS {
      * but not an error to insert two cities with identical names.
      * 
      * @param name
-     *             City name.
+     *            City name.
      * @param x
-     *             City x-coordinate. Integer in the range 0 to 2^{15} − 1.
+     *            City x-coordinate. Integer in the range 0 to 2^{15} − 1.
      * @param y
-     *             City y-coordinate. Integer in the range 0 to 2^{15} − 1.
+     *            City y-coordinate. Integer in the range 0 to 2^{15} − 1.
      * @return True iff the city is successfully entered into the database
      */
     public boolean insert(String name, int x, int y) {
@@ -78,6 +80,7 @@ public class GISDB implements GIS {
         return true;
     }
 
+
     // ----------------------------------------------------------
     /**
      * The city with these coordinates is deleted from the database
@@ -86,9 +89,9 @@ public class GISDB implements GIS {
      * If no city at this location exists, print the empty string.
      * 
      * @param x
-     *          City x-coordinate.
+     *            City x-coordinate.
      * @param y
-     *          City y-coordinate.
+     *            City y-coordinate.
      * @return A string with the number of nodes visited during the deletion
      *         followed by the name of the city (this is blank if nothing
      *         was deleted).
@@ -112,12 +115,14 @@ public class GISDB implements GIS {
             return ""; // safety
         String cityName = parts[1];
 
-        // Delete the same city from BST
+        // Delete THE SPECIFIC CITY from BST using deleteOne
         City cityToRemove = new City(cityName, x, y);
-        cityBinarySearchTree.deleteAll(cityToRemove); // generic BST deletion
+        cityBinarySearchTree.deleteOne(cityToRemove); // CHANGED: deleteAll ->
+                                                      // deleteOne
 
         return kdOutput;
     }
+
 
     // ----------------------------------------------------------
     /**
@@ -128,7 +133,7 @@ public class GISDB implements GIS {
      * If no city with this name exists, print the empty string.
      * 
      * @param name
-     *             City name.
+     *            City name.
      * @return A string with the coordinates of each city that is deleted
      *         (listed in preorder as they are deleted).
      *         Print the empty string if no cites match.
@@ -159,30 +164,33 @@ public class GISDB implements GIS {
         return allMatches;
     }
 
+
     // ----------------------------------------------------------
     /**
      * Display the name of the city at coordinate (x, y) if it exists.
      * 
      * @param x
-     *          X coordinate.
+     *            X coordinate.
      * @param y
-     *          Y coordinate.
+     *            Y coordinate.
      * @return The city name if there is such a city, empty otherwise
      */
     public String info(int x, int y) {
         if (cityKDTree.find(x, y) == null) {
             return "";
-        } else {
+        }
+        else {
             return cityKDTree.find(x, y).getName();
         }
     }
+
 
     // ----------------------------------------------------------
     /**
      * Display the coordinates of all cities with this name, if any exist.
      * 
      * @param name
-     *             The city name.
+     *            The city name.
      * @return String representing the list of cities and coordinates,
      *         empty if there are none.
      */
@@ -196,6 +204,7 @@ public class GISDB implements GIS {
         return cityBinarySearchTree.findAll(dummy);
     }
 
+
     // ----------------------------------------------------------
     /**
      * All cities within radius distance from location (x, y) are listed.
@@ -205,11 +214,11 @@ public class GISDB implements GIS {
      * the k-d tree are visited.
      * 
      * @param x
-     *               Search circle center: X coordinate. May be negative.
+     *            Search circle center: X coordinate. May be negative.
      * @param y
-     *               Search circle center: X coordinate. May be negative.
+     *            Search circle center: X coordinate. May be negative.
      * @param radius
-     *               Search radius, must be non-negative.
+     *            Search radius, must be non-negative.
      * @return String listing the cities found (if any) , followed by the count
      *         of the number of k-d tree nodes looked at during the
      *         search process. If the radius is bad, return an empty string.
@@ -218,6 +227,7 @@ public class GISDB implements GIS {
     public String search(int x, int y, int radius) {
         return cityKDTree.search(x, y, radius);
     }
+
 
     // ----------------------------------------------------------
     /**
@@ -231,6 +241,7 @@ public class GISDB implements GIS {
     public String debug() {
         return cityKDTree.printTree();
     }
+
 
     // ----------------------------------------------------------
     /**

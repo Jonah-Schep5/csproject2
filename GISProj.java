@@ -44,7 +44,7 @@ public class GISProj {
      * methods.
      *
      * @param args
-     *             Command line parameters: There are none
+     *            Command line parameters: There are none
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {
