@@ -38,7 +38,7 @@ public class KDTree {
          * Creates a new node with the given city.
          * 
          * @param c
-         *            the city to store in this node
+         *          the city to store in this node
          */
         Node(City c) {
             city = c;
@@ -55,12 +55,11 @@ public class KDTree {
         root = null;
     }
 
-
     /**
      * Inserts a city into the KD-tree.
      * 
      * @param city
-     *            the city to insert
+     *             the city to insert
      * @return {@code true} if the city was successfully inserted;
      *         {@code false} if {@code city} is {@code null} or a city with
      *         identical coordinates already exists
@@ -75,16 +74,15 @@ public class KDTree {
         return true;
     }
 
-
     /**
      * Recursive helper to insert a city into the tree.
      * 
      * @param node
-     *            current node
+     *              current node
      * @param city
-     *            city to insert
+     *              city to insert
      * @param depth
-     *            current tree depth (determines axis)
+     *              current tree depth (determines axis)
      * @return the subtree root after insertion
      */
     private Node insertRec(Node node, City city, int depth) {
@@ -97,39 +95,36 @@ public class KDTree {
         // Equal values go RIGHT in KDTree
         if (cmp < 0) {
             node.left = insertRec(node.left, city, depth + 1);
-        }
-        else {
+        } else {
             node.right = insertRec(node.right, city, depth + 1);
         }
         return node;
     }
 
-
     /**
      * Finds a city in the KD-tree by its coordinates.
      * 
      * @param x
-     *            the x-coordinate
+     *          the x-coordinate
      * @param y
-     *            the y-coordinate
+     *          the y-coordinate
      * @return the {@link City} if found, or {@code null} if not present
      */
     public City find(int x, int y) {
         return findRec(root, x, y, 0);
     }
 
-
     /**
      * Recursive helper to locate a city by coordinates.
      * 
      * @param node
-     *            current node
+     *              current node
      * @param x
-     *            x-coordinate to search for
+     *              x-coordinate to search for
      * @param y
-     *            y-coordinate to search for
+     *              y-coordinate to search for
      * @param depth
-     *            current tree depth (determines axis)
+     *              current tree depth (determines axis)
      * @return the city if found, otherwise {@code null}
      */
     private City findRec(Node node, int x, int y, int depth) {
@@ -147,14 +142,13 @@ public class KDTree {
         return findRec(nextNode, x, y, depth + 1);
     }
 
-
     /**
      * Deletes a city from the KD-tree by its coordinates.
      * 
      * @param x
-     *            the x-coordinate of the city to delete
+     *          the x-coordinate of the city to delete
      * @param y
-     *            the y-coordinate of the city to delete
+     *          the y-coordinate of the city to delete
      * @return a string containing the number of visited nodes and, if deleted,
      *         the city's name
      */
@@ -167,39 +161,42 @@ public class KDTree {
         return visited[0] + "\n" + name.toString();
     }
 
-
     /**
      * Recursive deletion helper.
      * 
      * @param node
-     *            current node
+     *                current node
      * @param x
-     *            x-coordinate
+     *                x-coordinate
      * @param y
-     *            y-coordinate
+     *                y-coordinate
      * @param depth
-     *            current depth
+     *                current depth
      * @param visited
-     *            node visit counter
+     *                node visit counter
      * @param name
-     *            buffer to store deleted city name
+     *                buffer to store deleted city name
      * @return the updated subtree root
      */
     private Node deleteRec(
-        Node node,
-        int x,
-        int y,
-        int depth,
-        int[] visited,
-        StringBuilder name) {
+            Node node,
+            int x,
+            int y,
+            int depth,
+            int[] visited,
+            StringBuilder name) {
         if (node == null)
             return null;
         visited[0]++;
 
-        if (node.city.getX() == x && node.city.getY() == y) {
-            if (name.length() == 0)
+        if (node.city.getX() == x) {
+
+            if (node.city.getY() == y) {
+
                 name.append(node.city.getName());
-            return deleteNode(node, depth, visited);
+                return deleteNode(node, depth, visited);
+            }
+
         }
 
         int axis = depth & 1;
@@ -208,30 +205,28 @@ public class KDTree {
 
         if (searchValue < nodeValue) {
             node.left = deleteRec(node.left, x, y, depth + 1, visited, name);
-        }
-        else {
+        } else {
             node.right = deleteRec(node.right, x, y, depth + 1, visited, name);
         }
         return node;
     }
-
 
     /**
      * Deletes a node and rebalances the KD-tree using the standard KD deletion
      * strategy (replace with subtree minimum).
      * 
      * @param node
-     *            node to delete
+     *                node to delete
      * @param depth
-     *            current depth
+     *                current depth
      * @param visited
-     *            node visit counter
+     *                node visit counter
      * @return the new root of this subtree
      */
     private Node deleteNode(Node node, int depth, int[] visited) {
         if (node.right != null) {
             return replaceWithSuccessor(node, node.right, depth, visited,
-                false);
+                    false);
         }
         if (node.left != null) {
             return replaceWithSuccessor(node, node.left, depth, visited, true);
@@ -239,87 +234,85 @@ public class KDTree {
         return null;
     }
 
-
     /**
      * Replaces the given node with the minimum node in a subtree.
      * 
      * @param node
-     *            node to replace
+     *                 node to replace
      * @param subtree
-     *            subtree to search for replacement
+     *                 subtree to search for replacement
      * @param depth
-     *            current depth
+     *                 current depth
      * @param visited
-     *            node visit counter
+     *                 node visit counter
      * @param usedLeft
-     *            whether the left subtree was used for replacement
+     *                 whether the left subtree was used for replacement
      * @return the updated node
      */
     private Node replaceWithSuccessor(
-        Node node,
-        Node subtree,
-        int depth,
-        int[] visited,
-        boolean usedLeft) {
+            Node node,
+            Node subtree,
+            int depth,
+            int[] visited,
+            boolean usedLeft) {
         int axis = depth & 1;
         Node successor = findMin(subtree, axis, depth + 1, visited);
         node.city = successor.city;
 
         if (usedLeft) {
             node.right = deleteRec(node.left, successor.city.getX(),
-                successor.city.getY(), depth + 1, visited, new StringBuilder());
+                    successor.city.getY(), depth + 1, visited,
+                    new StringBuilder());
             node.left = null;
-        }
-        else {
+        } else {
             node.right = deleteRec(node.right, successor.city.getX(),
-                successor.city.getY(), depth + 1, visited, new StringBuilder());
+                    successor.city.getY(), depth + 1, visited,
+                    new StringBuilder());
         }
         return node;
     }
-
 
     /**
      * Finds the node with the minimum value on the given axis in a subtree.
      * 
      * @param node
-     *            subtree root
+     *                subtree root
      * @param axis
-     *            axis to minimize (0 for x, 1 for y)
+     *                axis to minimize (0 for x, 1 for y)
      * @param depth
-     *            current depth
+     *                current depth
      * @param visited
-     *            node visit counter
+     *                node visit counter
      * @return node with minimum coordinate on the given axis
      */
     private Node findMin(Node node, int axis, int depth, int[] visited) {
         if (node == null)
             return null;
         visited[0]++;
-
+        Node leftMin = findMin(node.left, axis, depth + 1, visited);
         int currentAxis = depth & 1;
         if (currentAxis == axis) {
-            Node leftMin = findMin(node.left, axis, depth + 1, visited);
+
             return (leftMin != null) ? leftMin : node;
         }
 
-        Node leftMin = findMin(node.left, axis, depth + 1, visited);
+        // Node leftMin = findMin(node.left, axis, depth+1 , visited);
         Node rightMin = findMin(node.right, axis, depth + 1, visited);
         return getMinOfThree(node, leftMin, rightMin, axis);
     }
-
 
     /**
      * Returns the node with the minimum coordinate on a given axis among three
      * candidates.
      * 
      * @param a
-     *            first node
+     *             first node
      * @param b
-     *            second node
+     *             second node
      * @param c
-     *            third node
+     *             third node
      * @param axis
-     *            axis to compare (0 for x, 1 for y)
+     *             axis to compare (0 for x, 1 for y)
      * @return node with minimum coordinate
      */
     private Node getMinOfThree(Node a, Node b, Node c, int axis) {
@@ -331,35 +324,33 @@ public class KDTree {
         return min;
     }
 
-
     /**
      * Compares two cities by a specific axis.
      * 
      * @param a
-     *            first city
+     *             first city
      * @param b
-     *            second city
+     *             second city
      * @param axis
-     *            axis to compare (0 for x, 1 for y)
+     *             axis to compare (0 for x, 1 for y)
      * @return negative if {@code a} is smaller, positive if larger, 0 if equal
      */
     private int compareByAxis(City a, City b, int axis) {
         return (axis == 0)
-            ? Integer.compare(a.getX(), b.getX())
-            : Integer.compare(a.getY(), b.getY());
+                ? Integer.compare(a.getX(), b.getX())
+                : Integer.compare(a.getY(), b.getY());
     }
-
 
     /**
      * Performs a range search to find all cities within a given radius of a
      * point.
      * 
      * @param x
-     *            query x-coordinate
+     *               query x-coordinate
      * @param y
-     *            query y-coordinate
+     *               query y-coordinate
      * @param radius
-     *            search radius (must be non-negative)
+     *               search radius (must be non-negative)
      * @return a string containing matching cities followed by the number of
      *         visited nodes
      */
@@ -373,33 +364,32 @@ public class KDTree {
         return sb.toString();
     }
 
-
     /**
      * Recursive helper for range search.
      * 
      * @param node
-     *            current node
+     *                current node
      * @param qx
-     *            query x
+     *                query x
      * @param qy
-     *            query y
+     *                query y
      * @param radius
-     *            search radius
+     *                search radius
      * @param depth
-     *            current depth
+     *                current depth
      * @param sb
-     *            result accumulator
+     *                result accumulator
      * @param visited
-     *            node visit counter
+     *                node visit counter
      */
     private void searchRec(
-        Node node,
-        int qx,
-        int qy,
-        int radius,
-        int depth,
-        StringBuilder sb,
-        int[] visited) {
+            Node node,
+            int qx,
+            int qy,
+            int radius,
+            int depth,
+            StringBuilder sb,
+            int[] visited) {
         if (node == null)
             return;
         visited[0]++;
@@ -420,7 +410,6 @@ public class KDTree {
             searchRec(node.right, qx, qy, radius, depth + 1, sb, visited);
     }
 
-
     /**
      * Returns a formatted in-order traversal of the KD-tree.
      * Each line shows the depth followed by the city's {@code toString()}.
@@ -433,16 +422,15 @@ public class KDTree {
         return sb.toString();
     }
 
-
     /**
      * Recursive helper for printing the tree structure.
      * 
      * @param node
-     *            current node
+     *              current node
      * @param sb
-     *            output accumulator
+     *              output accumulator
      * @param depth
-     *            current depth
+     *              current depth
      */
     private void printRec(Node node, StringBuilder sb, int depth) {
         if (node == null)

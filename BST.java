@@ -45,20 +45,38 @@ class BST<T extends Comparable<T>> {
         Node left;
         /** Reference to the right child node. */
         Node right;
+
         /** The depth level of this node in the tree (root = 0). */
-        int level;
 
         /**
-         * Constructs a new node containing the specified data.
+         * Constructs
+         * a new node
+         * containing
+         * the
+         * specified
+         * data.
          *
          * @param data
-         *            the value to store at this node
+         *              the
+         *              value
+         *              to
+         *              store
+         *              at
+         *              this
+         *              node
          * @param level
-         *            the depth level of the node in the tree
+         *              the
+         *              depth
+         *              level
+         *              of
+         *              the
+         *              node
+         *              in
+         *              the
+         *              tree
          */
-        Node(T data, int level) {
+        Node(T data) {
             this.data = data;
-            this.level = level;
         }
     }
 
@@ -71,55 +89,50 @@ class BST<T extends Comparable<T>> {
      * Duplicate values are inserted into the <strong>left</strong> subtree.
      *
      * @param value
-     *            the value to insert
+     *              the value to insert
      * @return {@code true} if the value was successfully inserted,
      *         {@code false} otherwise
      */
     public boolean insert(T value) {
         if (root == null) {
-            root = new Node(value, 0);
+            root = new Node(value);
             return true;
         }
-        return insertRec(root, value, 0);
+        return insertRec(root, value);
     }
-
 
     /**
      * Recursive helper method for {@link #insert(Object)}.
      *
      * @param curr
-     *            the current node being examined
+     *              the current node being examined
      * @param value
-     *            the value to insert
-     * @param level
-     *            the current depth level
+     *              the value to insert
      * @return {@code true} if insertion was successful, {@code false} otherwise
      */
-    private boolean insertRec(Node curr, T value, int level) {
+    private boolean insertRec(Node curr, T value) {
         int cmp = value.compareTo(curr.data);
         if (cmp <= 0) { // equal goes LEFT
             if (curr.left == null) {
-                curr.left = new Node(value, level + 1);
+                curr.left = new Node(value);
                 return true;
             }
-            return insertRec(curr.left, value, level + 1);
-        }
-        else {
+            return insertRec(curr.left, value);
+        } else {
             if (curr.right == null) {
-                curr.right = new Node(value, level + 1);
+                curr.right = new Node(value);
                 return true;
             }
-            return insertRec(curr.right, value, level + 1);
+            return insertRec(curr.right, value);
         }
     }
-
 
     /**
      * Deletes <strong>all</strong> occurrences of the specified value from the
      * BST.
      *
      * @param value
-     *            the value to delete
+     *              the value to delete
      * @return {@code true} if at least one node was deleted, {@code false}
      *         otherwise
      */
@@ -129,16 +142,15 @@ class BST<T extends Comparable<T>> {
         return deleted[0];
     }
 
-
     /**
      * Recursive helper method for {@link #deleteAll(Object)}.
      *
      * @param curr
-     *            the current node being examined
+     *                the current node being examined
      * @param value
-     *            the value to delete
+     *                the value to delete
      * @param deleted
-     *            flag indicating if a deletion occurred
+     *                flag indicating if a deletion occurred
      * @return the updated subtree root after deletion
      */
     private Node deleteRec(Node curr, T value, boolean[] deleted) {
@@ -153,13 +165,19 @@ class BST<T extends Comparable<T>> {
         int cmp = value.compareTo(curr.data);
         if (cmp == 0) {
             deleted[0] = true;
-
-            // Case 1: no children
-            if (curr.left == null && curr.right == null) {
-                return null;
-            }
+            /**
+             * // Case 1: no children
+             * if (curr.left == null) {
+             * 
+             * if (curr.right == null) {
+             * 
+             * //return null;
+             * }
+             * }
+             **/
             // Case 2: one child
             if (curr.left == null) {
+
                 return curr.right;
             }
             if (curr.right == null) {
@@ -175,7 +193,6 @@ class BST<T extends Comparable<T>> {
         return curr;
     }
 
-
     /**
      * Deletes a <strong>single specific</strong> object from the BST based on
      * exact equality (using .equals()).
@@ -183,7 +200,7 @@ class BST<T extends Comparable<T>> {
      * all nodes that compare as equal.
      *
      * @param value
-     *            the exact object to delete
+     *              the exact object to delete
      * @return {@code true} if the object was found and deleted, {@code false}
      *         otherwise
      */
@@ -193,18 +210,17 @@ class BST<T extends Comparable<T>> {
         return deleted[0];
     }
 
-
     /**
      * Recursive helper for deleteOne - deletes first exact match found.
      * Uses in-order traversal to ensure we check all nodes with matching
      * compareTo.
      *
      * @param curr
-     *            current node
+     *                current node
      * @param value
-     *            the exact object to delete
+     *                the exact object to delete
      * @param deleted
-     *            flag indicating if deletion occurred
+     *                flag indicating if deletion occurred
      * @return updated subtree root
      */
     private Node deleteOneRec(Node curr, T value, boolean[] deleted) {
@@ -228,20 +244,18 @@ class BST<T extends Comparable<T>> {
             deleted[0] = true;
 
             // Case 1: no children
-            if (curr.left == null && curr.right == null) {
-                return null;
-            }
+            // if (curr.left == null && curr.right == null) { return null; }
             // Case 2: one child
             if (curr.left == null) {
                 Node rightChild = curr.right;
-                rightChild.level = curr.level;
+
                 return rightChild;
             }
-            if (curr.right == null) {
-                Node leftChild = curr.left;
-                leftChild.level = curr.level;
-                return leftChild;
-            }
+            // if (curr.right==null) {
+            // Node leftChild = curr.left;
+
+            // return leftChild;
+            // }
 
             // Case 3: two children – replace with max from left subtree
             Node maxLeft = findMax(curr.left);
@@ -259,12 +273,11 @@ class BST<T extends Comparable<T>> {
         return curr;
     }
 
-
     /**
      * Finds the node with the maximum value in a subtree.
      *
      * @param curr
-     *            the root of the subtree
+     *             the root of the subtree
      * @return the node containing the maximum value
      */
     private Node findMax(Node curr) {
@@ -273,14 +286,13 @@ class BST<T extends Comparable<T>> {
         return curr;
     }
 
-
     /**
      * Finds and returns all occurrences of the specified value in the tree.
      * <p>
      * The results are returned as a newline-separated {@link String}.
      *
      * @param value
-     *            the value to search for
+     *              the value to search for
      * @return a newline-separated list of all matching values, or an empty
      *         string if none found
      */
@@ -290,16 +302,15 @@ class BST<T extends Comparable<T>> {
         return sb.toString().trim();
     }
 
-
     /**
      * Recursive helper method for {@link #findAll(Object)}.
      *
      * @param curr
-     *            the current node being examined
+     *              the current node being examined
      * @param value
-     *            the value to find
+     *              the value to find
      * @param sb
-     *            the string builder accumulating results
+     *              the string builder accumulating results
      */
     private void findAllRec(Node curr, T value, StringBuilder sb) {
         if (curr == null)
@@ -311,7 +322,6 @@ class BST<T extends Comparable<T>> {
         findAllRec(curr.left, value, sb);
         findAllRec(curr.right, value, sb);
     }
-
 
     /**
      * Returns a string representation of the tree in <strong>in-order
@@ -326,18 +336,31 @@ class BST<T extends Comparable<T>> {
         return sb.toString();
     }
 
-
     /**
      * Recursive helper for {@link #printTree()}, performing an in-order
      * traversal.
      *
      * @param curr
-     *            the current node being examined
+     *             the current node being examined
      * @param sb
-     *            the string builder accumulating the tree representation
-     * @param depth
-     *            the current depth level (calculated dynamically)
+     *             the string builder accumulating the tree representation
+     * 
+     *             private void printRec(Node curr, StringBuilder sb) {
+     *             if (curr == null)
+     *             return;
+     * 
+     *             printRec(curr.left, sb);
+     * 
+     *             sb.append(curr.level);
+     *             if (curr.level > 0) {
+     *             sb.append(" ".repeat(curr.level * 2));
+     *             }
+     *             sb.append(curr.data).append("\n");
+     * 
+     *             printRec(curr.right, sb);
+     *             }
      */
+
     private void printRec(Node curr, StringBuilder sb, int depth) {
         if (curr == null)
             return;
@@ -346,10 +369,13 @@ class BST<T extends Comparable<T>> {
 
         sb.append(depth);
         if (depth > 0) {
+            // sb.append(" ".repeat(depth * 2 * 2 *2 *2 *2 *2 * 2* 2* 2* 2* 2*
+            // 2* 2* 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2 / 2));
             sb.append(" ".repeat(depth * 2));
         }
         sb.append(curr.data).append("\n");
 
         printRec(curr.right, sb, depth + 1);
     }
+
 }
