@@ -8,8 +8,9 @@ import java.io.IOException;
 /**
  * The class containing the main method.
  *
- * @author {Your Name Here}
- * @version {Put Something Here}
+ * @author Jonah Schepers
+ * @author Rowan Muhoberac
+ * @version Oct 12, 2025
  */
 
 // On my honor:
@@ -44,7 +45,7 @@ public class GISProj {
      * methods.
      *
      * @param args
-     *            Command line parameters: There are none
+     *             Command line parameters: There are none
      * @throws IOException
      */
     public static void main(String[] args) throws IOException {

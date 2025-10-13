@@ -1,12 +1,11 @@
 // -------------------------------------------------------------------------
 /**
  * Implementation of the GIS interface. This is what calls the BST and the
- * <<<<<<< HEAD
- * <<<<<<< HEAD
- * kd tree to do the work.
+ * <<<<<<< HEAD <<<<<<< HEAD kd tree to do the work.
  *
- * @author {Your Name Here}
- * @version {Put Something Here}
+ * @author Jonah Schepers
+ * @author Rowan Muhoberac
+ * @version Oct 12, 2025
  *
  */
 public class GISDB implements GIS {
@@ -48,8 +47,10 @@ public class GISDB implements GIS {
     // ----------------------------------------------------------
     /**
      * A city at coordinate (x, y) with name name is entered into the database.
-     * It is an error to insert two cities with identical coordinates,
-     * but not an error to insert two cities with identical names.
+     * It
+     * is an error to insert two cities with identical coordinates, but not an
+     * error
+     * to insert two cities with identical names.
      * 
      * @param name
      *             City name.
@@ -80,18 +81,19 @@ public class GISDB implements GIS {
 
     // ----------------------------------------------------------
     /**
-     * The city with these coordinates is deleted from the database
-     * (if it exists).
-     * Print the name of the city if it exists.
-     * If no city at this location exists, print the empty string.
+     * The city with these coordinates is deleted from the database (if it
+     * exists).
+     * Print the name of the city if it exists. If no city at this location
+     * exists,
+     * print the empty string.
      * 
      * @param x
      *          City x-coordinate.
      * @param y
      *          City y-coordinate.
      * @return A string with the number of nodes visited during the deletion
-     *         followed by the name of the city (this is blank if nothing
-     *         was deleted).
+     *         followed by the name of the city (this is blank if nothing was
+     *         deleted).
      */
     public String delete(int x, int y) {
 
@@ -113,17 +115,19 @@ public class GISDB implements GIS {
 
     // ----------------------------------------------------------
     /**
-     * The city with this name is deleted from the database (if it exists).
-     * If two or more cities have this name, then ALL such cities must be
-     * removed.
-     * Print the coordinates of each city that is deleted.
-     * If no city with this name exists, print the empty string.
+     * The city with this name is deleted from the database (if it exists). If
+     * two
+     * or more cities have this name, then ALL such cities must be removed.
+     * Print
+     * the coordinates of each city that is deleted. If no city with this name
+     * exists, print the empty string.
      * 
      * @param name
      *             City name.
      * @return A string with the coordinates of each city that is deleted
-     *         (listed in preorder as they are deleted).
-     *         Print the empty string if no cites match.
+     *         (listed in
+     *         preorder as they are deleted). Print the empty string if no cites
+     *         match.
      */
     public String delete(String name) {
         // Step 1: Get all matching cities from BST
@@ -175,8 +179,8 @@ public class GISDB implements GIS {
      * 
      * @param name
      *             The city name.
-     * @return String representing the list of cities and coordinates,
-     *         empty if there are none.
+     * @return String representing the list of cities and coordinates, empty if
+     *         there are none.
      */
     public String info(String name) {
         if (name == null || name.isEmpty()) {
@@ -191,11 +195,12 @@ public class GISDB implements GIS {
 
     // ----------------------------------------------------------
     /**
-     * All cities within radius distance from location (x, y) are listed.
-     * A city that is exactly radius distance from the query point should be
-     * listed.
-     * This operation should be implemented so that as few nodes as possible in
-     * the k-d tree are visited.
+     * All cities within radius distance from location (x, y) are listed. A city
+     * that is exactly radius distance from the query point should be listed.
+     * This
+     * operation should be implemented so that as few nodes as possible in the
+     * k-d
+     * tree are visited.
      * 
      * @param x
      *               Search circle center: X coordinate. May be negative.
@@ -204,9 +209,12 @@ public class GISDB implements GIS {
      * @param radius
      *               Search radius, must be non-negative.
      * @return String listing the cities found (if any) , followed by the count
-     *         of the number of k-d tree nodes looked at during the
-     *         search process. If the radius is bad, return an empty string.
-     *         If k-d tree is empty, the number of nodes visited is zero.
+     *         of
+     *         the number of k-d tree nodes looked at during the search process.
+     *         If
+     *         the radius is bad, return an empty string. If k-d tree is empty,
+     *         the
+     *         number of nodes visited is zero.
      */
     public String search(int x, int y, int radius) {
         return cityKDTree.search(x, y, radius);
@@ -215,9 +223,12 @@ public class GISDB implements GIS {
     // ----------------------------------------------------------
     /**
      * Print a listing of the database as an inorder traversal of the k-d tree.
-     * Each city should be printed on a separate line. Each line should start
-     * with the level of the current node, then be indented by 2 * level spaces
-     * for a node at a given level, counting the root as level 0.
+     * Each
+     * city should be printed on a separate line. Each line should start with
+     * the
+     * level of the current node, then be indented by 2 * level spaces for a
+     * node at
+     * a given level, counting the root as level 0.
      * 
      * @return String listing the cities as specified.
      */
@@ -227,12 +238,12 @@ public class GISDB implements GIS {
 
     // ----------------------------------------------------------
     /**
-     * /**
-     * Print a listing of the BST in alphabetical order (inorder traversal)
-     * on the names.
-     * Each city should be printed on a separate line. Each line should start
-     * with the level of the current node, then be indented by 2 * level spaces
-     * for a node at a given level, counting the root as level 0.
+     * /** Print a listing of the BST in alphabetical order (inorder traversal)
+     * on
+     * the names. Each city should be printed on a separate line. Each line
+     * should
+     * start with the level of the current node, then be indented by 2 * level
+     * spaces for a node at a given level, counting the root as level 0.
      * 
      * @return String listing the cities as specified.
      */

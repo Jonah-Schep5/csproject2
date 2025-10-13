@@ -17,16 +17,17 @@ import student.TestCase;
  * <li>Tree consistency and complex mixed-operation scenarios</li>
  * </ul>
  * 
- * Each test method focuses on a specific functionality or edge case scenario
- * to ensure that the implementation behaves correctly and consistently.
+ * Each test method focuses on a specific functionality or edge case scenario to
+ * ensure that the implementation behaves correctly and consistently.
  * 
- * @author {Your Name}
- * @version {Put Version Here}
+ * @author Jonah Schepers
+ * @author Rowan Muhoberac
+ * @version Oct 12, 2025
  */
 public class GISTest extends TestCase {
 
     private GIS it;
-    private GIS db;
+    private GIS testDB;
 
     /**
      * Sets up the test environment before each test is executed.
@@ -35,7 +36,7 @@ public class GISTest extends TestCase {
      */
     public void setUp() {
         it = new GISDB();
-        db = new GISDB();
+        testDB = new GISDB();
     }
 
     /**
@@ -66,9 +67,10 @@ public class GISTest extends TestCase {
     }
 
     /**
-     * Tests behavior of the GIS system when invalid input is provided.
-     * Ensures insertions with negative or out-of-range coordinates are rejected
-     * and invalid search parameters return empty results.
+     * Tests behavior of the GIS system when invalid input is provided. Ensures
+     * insertions with negative or out-of-range coordinates are rejected and
+     * invalid
+     * search parameters return empty results.
      *
      * @throws IOException
      *                     if an I/O error occurs
@@ -112,9 +114,10 @@ public class GISTest extends TestCase {
     }
 
     /**
-     * Tests behavior when multiple cities share the same name.
-     * Ensures {@link GIS#info(String)} returns all matches and
-     * {@link GIS#delete(String)} removes them all.
+     * Tests behavior when multiple cities share the same name. Ensures
+     * {@link GIS#info(String)} returns all matches and
+     * {@link GIS#delete(String)}
+     * removes them all.
      *
      * @throws IOException
      *                     if an I/O error occurs
@@ -143,8 +146,9 @@ public class GISTest extends TestCase {
     }
 
     /**
-     * Tests {@link GIS#search(int, int, int)} with various radii,
-     * including zero, boundary, large, and negative values.
+     * Tests {@link GIS#search(int, int, int)} with various radii, including
+     * zero,
+     * boundary, large, and negative values.
      *
      * @throws IOException
      *                     if an I/O error occurs
@@ -172,8 +176,9 @@ public class GISTest extends TestCase {
     }
 
     /**
-     * Tests tree consistency by inserting and deleting records,
-     * re-inserting into freed locations, and verifying data integrity.
+     * Tests tree consistency by inserting and deleting records, re-inserting
+     * into
+     * freed locations, and verifying data integrity.
      *
      * @throws IOException
      *                     if an I/O error occurs
@@ -206,7 +211,8 @@ public class GISTest extends TestCase {
 
     /**
      * Tests behavior at coordinate boundaries, including origin, maximums,
-     * edges, and invalid coordinates beyond allowed limits.
+     * edges,
+     * and invalid coordinates beyond allowed limits.
      *
      * @throws IOException
      *                     if an I/O error occurs
@@ -282,8 +288,7 @@ public class GISTest extends TestCase {
 
     /**
      * Tests mutation coverage for line 100 - x coordinate boundary checks in
-     * insert()
-     * Tests both conditions: x < 0 and x > MAXCOORD
+     * insert() Tests both conditions: x < 0 and x > MAXCOORD
      */
 
     public void testInsertInvalidXCoordinates() {
@@ -306,8 +311,7 @@ public class GISTest extends TestCase {
 
     /**
      * Tests mutation coverage for line 103 - y coordinate boundary checks in
-     * insert()
-     * Tests both conditions: y < 0 and y > MAXCOORD
+     * insert() Tests both conditions: y < 0 and y > MAXCOORD
      */
 
     public void testInsertInvalidYCoordinates() {
@@ -329,9 +333,9 @@ public class GISTest extends TestCase {
     }
 
     /**
-     * Tests mutation coverage for line 197 - null/empty name checks in info(String
-     * name)
-     * Tests both conditions: name == null and name.isEmpty()
+     * Tests mutation coverage for line 197 - null/empty name checks in
+     * info(String
+     * name) Tests both conditions: name == null and name.isEmpty()
      */
     public void testInfoWithInvalidNames() {
         // Insert some cities first
@@ -341,7 +345,8 @@ public class GISTest extends TestCase {
         // Test with null name (first condition should be TRUE, returns empty)
         assertEquals("", it.info((String) null));
 
-        // Test with empty string (second condition should be TRUE, returns empty)
+        // Test with empty string (second condition should be TRUE, returns
+        // empty)
         assertEquals("", it.info(""));
 
         // Test with valid name (both conditions FALSE, returns data)
@@ -349,15 +354,18 @@ public class GISTest extends TestCase {
         assertTrue(result.contains("ValidCity"));
         assertTrue(result.contains("100"));
 
-        // Test with non-existent name (both conditions FALSE, but no match found)
+        // Test with non-existent name (both conditions FALSE, but no match
+        // found)
         assertEquals("", it.info("NonExistent"));
     }
 
     /**
-     * Tests mutation coverage for line 197 - name.isEmpty() check in info(String
-     * name)
-     * Kills the mutation by inserting a city with empty name, so searching for it
-     * would return results, but the guard clause should prevent that search
+     * Tests mutation coverage for line 197 - name.isEmpty() check in
+     * info(String
+     * name) Kills the mutation by inserting a city with empty name, so
+     * searching
+     * for it would return results, but the guard clause should prevent that
+     * search
      */
 
     public void testInfoEmptyNameGuardClause() {
@@ -366,100 +374,108 @@ public class GISTest extends TestCase {
         boolean inserted = it.insert("", 100, 100);
 
         if (inserted) {
-            // If empty name is allowed, the guard clause should still return empty
-            // But if mutation replaces isEmpty() with false, it will search and find the
-            // city
+            // If empty name is allowed, the guard clause should still return
+            // empty
+            // But if mutation replaces isEmpty() with false, it will search and
+            // find the city
             assertEquals("", it.info(""));
         } else {
-            // If empty name is not allowed in insert, we need a different strategy
-            // Test that empty string returns empty without causing any BST traversal
+            // If empty name is not allowed in insert, we need a different
+            // strategy
+            // Test that empty string returns empty without causing any BST
+            // traversal
             assertTrue(it.insert("A", 100, 100));
             assertEquals("", it.info(""));
         }
     }
 
     /**
-     * Test deleting with x = 0 (valid minimum boundary)
-     * Kills mutations on line 100: x < 0 (false case)
+     * Test deleting with x = 0 (valid minimum boundary) Kills mutations on line
+     * 100: x < 0 (false case)
      */
 
     public void testDeleteWithXAtZero() {
-        db.insert("EdgeCity", 0, 100);
-        String result = db.delete(0, 100);
+        testDB.insert("EdgeCity", 0, 100);
+        String result = testDB.delete(0, 100);
         assertTrue(result.contains("EdgeCity"));
         // Verify city was deleted
-        assertEquals("", db.info(0, 100));
+        assertEquals("", testDB.info(0, 100));
     }
 
     /**
-     * Test deleting with x = MAXCOORD (valid maximum boundary)
-     * Kills mutations on line 101: x > MAXCOORD (false case)
+     * Test deleting with x = MAXCOORD (valid maximum boundary) Kills mutations
+     * on
+     * line 101: x > MAXCOORD (false case)
      */
 
     public void testDeleteWithXAtMax() {
-        db.insert("MaxCity", 32767, 100);
-        String result = db.delete(32767, 100);
+        testDB.insert("MaxCity", 32767, 100);
+        String result = testDB.delete(32767, 100);
         assertTrue(result.contains("MaxCity"));
         // Verify city was deleted
-        assertEquals("", db.info(32767, 100));
+        assertEquals("", testDB.info(32767, 100));
     }
 
     /**
-     * Test deleting with y = 0 (valid minimum boundary)
-     * Kills mutations on line 106: y < 0 (false case)
+     * Test deleting with y = 0 (valid minimum boundary) Kills mutations on line
+     * 106: y < 0 (false case)
      */
 
     public void testDeleteWithYAtZero() {
-        db.insert("EdgeCity", 100, 0);
-        String result = db.delete(100, 0);
+        testDB.insert("EdgeCity", 100, 0);
+        String result = testDB.delete(100, 0);
         assertTrue(result.contains("EdgeCity"));
         // Verify city was deleted
-        assertEquals("", db.info(100, 0));
+        assertEquals("", testDB.info(100, 0));
     }
 
     /**
-     * Test deleting with y = MAXCOORD (valid maximum boundary)
-     * Kills mutations on line 107: y > MAXCOORD (false case)
+     * Test deleting with y = MAXCOORD (valid maximum boundary) Kills mutations
+     * on
+     * line 107: y > MAXCOORD (false case)
      */
 
     public void testDeleteWithYAtMax() {
-        db.insert("MaxCity", 100, 32767);
-        String result = db.delete(100, 32767);
+        testDB.insert("MaxCity", 100, 32767);
+        String result = testDB.delete(100, 32767);
         assertTrue(result.contains("MaxCity"));
         // Verify city was deleted
-        assertEquals("", db.info(100, 32767));
+        assertEquals("", testDB.info(100, 32767));
     }
 
     /**
-     * Test deleting from empty database
-     * Kills mutations on line 113: kdOutput.trim().isEmpty()
+     * Test deleting from empty database Kills mutations on line 113:
+     * kdOutput.trim().isEmpty()
      */
 
     public void testDeleteFromEmptyDatabase() {
-        String result = db.delete(100, 100);
+        String result = testDB.delete(100, 100);
         assertEquals("", result.trim());
     }
 
     /**
-     * Test deleting existing city returns correct output
-     * Kills mutations on line 113: kdOutput.trim().isEmpty() (false case)
+     * Test deleting existing city returns correct output Kills mutations on
+     * line
+     * 113: kdOutput.trim().isEmpty() (false case)
      */
 
     public void testDeleteExistingCityReturnsOutput() {
-        db.insert("Boston", 150, 250);
-        String result = db.delete(150, 250);
+        testDB.insert("Boston", 150, 250);
+        String result = testDB.delete(150, 250);
         assertFalse(result.trim().isEmpty());
         assertTrue(result.contains("Boston"));
         // Verify city was deleted
-        assertEquals("", db.info(150, 250));
+        assertEquals("", testDB.info(150, 250));
     }
 
+    /**
+     * Test deleting a city that does not exist
+     */
     public void testDeleteNonExistentCity() {
-        GISDB db = new GISDB();
         // Don't insert anything
 
         // Should return just the visit count when nothing is deleted
-        String result = db.delete(100, 100);
+        String result = testDB.delete(100, 100);
         assertTrue(result.trim().isEmpty() || result.matches("\\d+ *"));
     }
 }

@@ -1,20 +1,16 @@
 /**
  * A generic Binary Search Tree (BST) implementation that stores elements of any
- * type
- * that implements {@link Comparable}.
+ * type that implements {@link Comparable}.
  * <p>
  * - Insertion rule: duplicate values are inserted into the
- * <strong>left</strong> subtree.
- * - Deletion rule: deletes <strong>all occurrences</strong> of a specified
- * value.
- * - Deletion replacement: when removing a node with two children, the node is
- * replaced with
- * the <strong>maximum value from its left subtree</strong>.
+ * <strong>left</strong> subtree. - Deletion rule: deletes <strong>all
+ * occurrences</strong> of a specified value. - Deletion replacement: when
+ * removing a node with two children, the node is replaced with the
+ * <strong>maximum value from its left subtree</strong>.
  * <p>
  * This class supports standard BST operations including insertion, deletion,
- * searching for all
- * occurrences of a value, and printing the tree with indentation based on
- * depth.
+ * searching for all occurrences of a value, and printing the tree with
+ * indentation based on depth.
  * 
  * <p>
  * Example usage:
@@ -30,8 +26,9 @@
  * @param <T>
  *            the type of elements stored in the BST, which must implement
  *            {@link Comparable}
- * @author {Your Name}
- * @version {Put Version Here}
+ * @author Jonah Schepers
+ * @author Rowan Muhoberac
+ * @version Oct 12, 2025
  */
 class BST<T extends Comparable<T>> {
 
@@ -48,33 +45,6 @@ class BST<T extends Comparable<T>> {
 
         /** The depth level of this node in the tree (root = 0). */
 
-        /**
-         * Constructs
-         * a new node
-         * containing
-         * the
-         * specified
-         * data.
-         *
-         * @param data
-         *              the
-         *              value
-         *              to
-         *              store
-         *              at
-         *              this
-         *              node
-         * @param level
-         *              the
-         *              depth
-         *              level
-         *              of
-         *              the
-         *              node
-         *              in
-         *              the
-         *              tree
-         */
         Node(T data) {
             this.data = data;
         }
@@ -91,7 +61,8 @@ class BST<T extends Comparable<T>> {
      * @param value
      *              the value to insert
      * @return {@code true} if the value was successfully inserted,
-     *         {@code false} otherwise
+     *         {@code false}
+     *         otherwise
      */
     public boolean insert(T value) {
         if (root == null) {
@@ -166,14 +137,11 @@ class BST<T extends Comparable<T>> {
         if (cmp == 0) {
             deleted[0] = true;
             /**
-             * // Case 1: no children
-             * if (curr.left == null) {
+             * // Case 1: no children if (curr.left == null) {
              * 
              * if (curr.right == null) {
              * 
-             * //return null;
-             * }
-             * }
+             * //return null; } }
              **/
             // Case 2: one child
             if (curr.left == null) {
@@ -195,9 +163,10 @@ class BST<T extends Comparable<T>> {
 
     /**
      * Deletes a <strong>single specific</strong> object from the BST based on
-     * exact equality (using .equals()).
-     * This is used when you need to delete one specific instance rather than
-     * all nodes that compare as equal.
+     * exact
+     * equality (using .equals()). This is used when you need to delete one
+     * specific
+     * instance rather than all nodes that compare as equal.
      *
      * @param value
      *              the exact object to delete
@@ -211,9 +180,8 @@ class BST<T extends Comparable<T>> {
     }
 
     /**
-     * Recursive helper for deleteOne - deletes first exact match found.
-     * Uses in-order traversal to ensure we check all nodes with matching
-     * compareTo.
+     * Recursive helper for deleteOne - deletes first exact match found. Uses
+     * in-order traversal to ensure we check all nodes with matching compareTo.
      *
      * @param curr
      *                current node
@@ -294,7 +262,8 @@ class BST<T extends Comparable<T>> {
      * @param value
      *              the value to search for
      * @return a newline-separated list of all matching values, or an empty
-     *         string if none found
+     *         string
+     *         if none found
      */
     public String findAll(T value) {
         StringBuilder sb = new StringBuilder();
@@ -325,8 +294,8 @@ class BST<T extends Comparable<T>> {
 
     /**
      * Returns a string representation of the tree in <strong>in-order
-     * traversal</strong>,
-     * with indentation indicating the depth level of each node.
+     * traversal</strong>, with indentation indicating the depth level of each
+     * node.
      *
      * @return a formatted string representation of the BST
      */
@@ -345,20 +314,17 @@ class BST<T extends Comparable<T>> {
      * @param sb
      *             the string builder accumulating the tree representation
      * 
-     *             private void printRec(Node curr, StringBuilder sb) {
-     *             if (curr == null)
-     *             return;
+     *             private void printRec(Node curr, StringBuilder sb) { if (curr
+     *             ==
+     *             null) return;
      * 
      *             printRec(curr.left, sb);
      * 
-     *             sb.append(curr.level);
-     *             if (curr.level > 0) {
-     *             sb.append(" ".repeat(curr.level * 2));
-     *             }
+     *             sb.append(curr.level); if (curr.level > 0) { sb.append("
+     *             ".repeat(curr.level * 2)); }
      *             sb.append(curr.data).append("\n");
      * 
-     *             printRec(curr.right, sb);
-     *             }
+     *             printRec(curr.right, sb); }
      */
 
     private void printRec(Node curr, StringBuilder sb, int depth) {

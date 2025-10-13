@@ -2,8 +2,9 @@
 /**
  * Interface class for the GIS project
  *
- * @author CS3114/5040 Staff
- * @version Summer 2025
+ * @author Jonah Schepers
+ * @author Rowan Muhoberac
+ * @version Oct 12, 2025
  *
  */
 public interface GIS {

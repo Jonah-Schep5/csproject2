@@ -18,8 +18,9 @@
  * Splitting alternates between X (depth % 2 == 0) and Y (depth % 2 == 1)
  * coordinates.
  * 
- * @author {Your Name}
- * @version {Put Version Here}
+ * @author Jonah Schepers
+ * @author Rowan Muhoberac
+ * @version Oct 12, 2025
  */
 public class KDTree {
 
@@ -261,13 +262,12 @@ public class KDTree {
 
         if (usedLeft) {
             node.right = deleteRec(node.left, successor.city.getX(),
-                    successor.city.getY(), depth + 1, visited,
-                    new StringBuilder());
+                    successor.city.getY(), depth + 1, visited, new StringBuilder());
             node.left = null;
         } else {
             node.right = deleteRec(node.right, successor.city.getX(),
-                    successor.city.getY(), depth + 1, visited,
-                    new StringBuilder());
+                    successor.city.getY(), depth + 1, visited, new StringBuilder());
+
         }
         return node;
     }
