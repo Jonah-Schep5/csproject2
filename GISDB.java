@@ -183,7 +183,7 @@ public class GISDB implements GIS {
      *         there are none.
      */
     public String info(String name) {
-        if (name == null || name.isEmpty()) {
+        if (name == null) {
             return "";
         }
 

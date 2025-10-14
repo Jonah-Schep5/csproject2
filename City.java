@@ -16,8 +16,9 @@
  * System.out.println(c); // "New York (100, 200)"
  * </pre>
  * 
- * @author Your Name
- * @version 1.0
+ * @author Jonah Schepers
+ * @author Rowan Muhoberac
+ * @version Oct 12, 2025
  */
 public class City implements Comparable<City> {
 
